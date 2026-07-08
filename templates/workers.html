@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Mardikorlar - Ishbozor{% endblock %}
+
+{% block content %}
+<style>
+    .workers-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .workers-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .workers-header h2 {
+        font-size: 2rem;
+        color: #0052cc;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .filter-section label {
+        font-weight: 600;
+        color: #333;
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .filter-section select {
+        padding: 0.8rem;
+        border: 1px solid #e0e7ff;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        min-width: 250px;
+    }
+
+    .filter-section select:focus {
+        outline: none;
+        border-color: #0052cc;
+        box-shadow: 0 0 0 3px rgba(0,82,204,0.1);
+    }
+
+    .workers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .worker-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+
+    .worker-card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+    }
+
+    .worker-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0052cc, #003a99);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2rem;
+        color: white;
+        font-weight: 600;
+    }
+
+    .worker-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .worker-title {
+        color: #0052cc;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .worker-info {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        text-align: left;
+    }
+
+    .worker-info p {
+        margin: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .worker-rating {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .stars {
+        color: #ffc107;
+        font-size: 1.1rem;
+    }
+
+    .rating-value {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .worker-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 0.7rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.3s;
+    }
+
+    .btn-hire {
+        background: #0052cc;
+        color: white;
+    }
+
+    .btn-hire:hover {
+        background: #003a99;
+        transform: scale(1.05);
+    }
+
+    .btn-profile {
+        background: #f0f4f8;
+        color: #0052cc;
+        border: 1px solid #e0e7ff;
+    }
+
+    .btn-profile:hover {
+        background: #e0e7ff;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #0052cc;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        color: #666;
+    }
+
+    .empty-state h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .error {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+        margin-bottom: 1rem;
+        border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+        .workers-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-section select {
+            min-width: 100%;
+        }
+    }
+</style>
+
+<div class="workers-container">
+    <div class="workers-header">
+        <h2>👥 Mardikorlar</h2>
+        <p>Platforma bo'ylab ro'yxatdan o'tgan mardikorlarni ko'rish</p>
+    </div>
+
+    <!-- FILTER SECTION -->
+    <div class="filter-section">
+        <label for="filter-type">Mardikorlarni Saralash:</label>
+        <select id="filter-type">
+            <option value="worker">💼 Faqat Mardikorlar</option>
+            <option value="all">👥 Barcha Foydalanuvchilar</option>
+        </select>
+    </div>
+
+    <div id="error-msg" class="error" style="display: none;"></div>
+
+    <div class="workers-grid" id="workers-container">
+        <div class="loading">⏳ Mardikorlar yuklanmoqda...</div>
+    </div>
+</div>
+
+<script>
+    let allUsers = [];
+
+    async function loadWorkers() {
+        try {
+            const response = await fetch('/api/users/');
+            if (!response.ok) throw new Error('API error');
+
+            const data = await response.json();
+            allUsers = data.results || data;
+
+            // Birinchi marta faqat worker type ko'rsat
+            displayWorkers('worker');
+
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('error-msg').textContent = '❌ Xato: ' + error.message;
+            document.getElementById('error-msg').style.display = 'block';
+            document.getElementById('workers-container').innerHTML = '';
+        }
+    }
+
+    function displayWorkers(filterType) {
+        const container = document.getElementById('workers-container');
+        container.innerHTML = '';
+
+        // Filter qo'llash
+        let users = allUsers;
+        if (filterType === 'worker') {
+            users = allUsers.filter(u => u.user_type === 'worker');
+        }
+
+        if (!users || users.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>Mardikorlar yo'q</h3>
+                    <p>${filterType === 'worker' ? 'Hozircha mardikorlar ro\'yxatdan o\'tmagan' : 'Foydalanuvchilar yo\'q'}</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Faqat 12 tasini ko'rsat
+        users.slice(0, 12).forEach(user => {
+            // Avatar - birinchi va oxirgi harflar
+            const initials = `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
+
+            const card = document.createElement('div');
+            card.className = 'worker-card';
+            card.innerHTML = `
+                <div class="worker-avatar">${initials}</div>
+                <h3 class="worker-name">${user.first_name} ${user.last_name}</h3>
+                <p class="worker-title">💼 Mardikar</p>
+
+                <div class="worker-info">
+                    <p>📧 <strong>${user.email}</strong></p>
+                    <p>📞 ${user.phone_number || '+998 90 000 00 00'}</p>
+                </div>
+
+                <div class="worker-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-value">${user.rating || 0}</span>
+                </div>
+
+                <div class="worker-actions">
+                    <button class="btn-action btn-hire" onclick="hireWorker(${user.id}, '${user.first_name} ${user.last_name}')">
+                        💼 Ish Ber
+                    </button>
+                    <button class="btn-action btn-profile" onclick="viewProfile(${user.id})">
+                        👤 Profile
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Filter change event
+    document.getElementById('filter-type').addEventListener('change', function(e) {
+        displayWorkers(e.target.value);
+    });
+
+    function hireWorker(userId, userName) {
+        alert(`${userName} ga ish berish - Demo\nID: ${userId}`);
+    }
+
+    function viewProfile(userId) {
+        alert(`Mardikar ID ${userId} - Profile - Demo`);
+    }
+
+    // Page load'da workers yuklash
+    loadWorkers();
+</script>
+
+{% endblock %}

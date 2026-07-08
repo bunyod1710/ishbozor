@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Ishlarni Ko'Rish - Ishbozor{% endblock %}
+
+{% block content %}
+<style>
+    .view-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .view-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .view-header h2 {
+        font-size: 2rem;
+        color: #0052cc;
+        margin-bottom: 0.5rem;
+    }
+
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .job-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        gap: 1.5rem;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+
+    .job-card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+    }
+
+    .job-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
+
+    .job-info h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .job-info p {
+        margin: 0.3rem 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .job-location {
+        color: #0052cc;
+        font-weight: 500;
+    }
+
+    .job-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+    .tag {
+        background: #f0f4f8;
+        color: #0052cc;
+        padding: 0.25rem 0.6rem;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        color: #666;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #0052cc;
+        font-weight: 600;
+    }
+
+    .error {
+        background: #ffcccc;
+        color: #cc0000;
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+    }
+</style>
+
+<div class="view-container">
+    <div class="view-header">
+        <h2>📊 Barcha Ishlar</h2>
+        <p>O'zbekistonning barcha viloyatlari bo'ylab ishlar</p>
+    </div>
+
+    <div class="jobs-grid" id="jobs-container">
+        <div class="loading">⏳ Ishlar yuklanmoqda...</div>
+    </div>
+</div>
+
+<script>
+    async function loadJobs() {
+        try {
+            const response = await fetch('/api/jobs/');
+            if (!response.ok) throw new Error('API error');
+            
+            const data = await response.json();
+            const jobs = data.results || data;
+            const container = document.getElementById('jobs-container');
+            container.innerHTML = '';
+
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>Ishlar topilmadi</h3></div>';
+                return;
+            }
+
+            jobs.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                card.innerHTML = `
+                    <div class="job-icon">💼</div>
+                    <div class="job-info">
+                        <h3>${job.title}</h3>
+                        <p class="job-location">📍 ${job.region_name} - ${job.district_name}</p>
+                        <p>${job.description.substring(0, 80)}...</p>
+                        <p>💰 Maosh: $${job.salary}</p>
+                        <div class="job-tags">
+                            <span class="tag">${job.job_type}</span>
+                            <span class="tag">${job.status}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+        } catch (error) {
+            document.getElementById('jobs-container').innerHTML = `<div class="error">❌ Xato: ${error.message}</div>`;
+        }
+    }
+
+    loadJobs();
+</script>
+
+{% endblock %}

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ishbozor{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            text-decoration: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .logo:hover {
+            opacity: 0.9;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .back-button-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem 0 2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #0052cc;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .back-button:hover {
+            background: #f0f4f8;
+            transform: translateX(-4px);
+        }
+
+        .main-content {
+            min-height: calc(100vh - 200px);
+        }
+
+        footer {
+            background: #1a3a52;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            header {
+                padding: 1rem;
+            }
+
+            .back-button-container {
+                padding: 0.5rem 1rem 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">ISHBOZOR</a>
+            <nav>
+                <a href="/">🏠 Bosh Sahifa</a>
+                <a href="/ish-berish/">📋 Ish Berish</a>
+                <a href="/jobs/">🔍 Ish Qidirish</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- BACK BUTTON -->
+    <div class="back-button-container" id="back-container" style="display: none;">
+        <a href="javascript:history.back()" class="back-button">← Orqaga</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 Ishbozor - Ish Topish Platforma</p>
+        <p>📞 Support: +998 90 123 45 67</p>
+    </footer>
+
+    <script>
+        // Back button show/hide logic
+        function updateBackButton() {
+            const currentPath = window.location.pathname;
+            const backContainer = document.getElementById('back-container');
+
+            // Home page'da back button ko'rsinmasin
+            if (currentPath === '/' || currentPath === '') {
+                backContainer.style.display = 'none';
+            } else {
+                backContainer.style.display = 'block';
+            }
+        }
+
+        // Page load'da check qil
+        updateBackButton();
+
+        // URL o'zgarganda check qil
+        window.addEventListener('popstate', updateBackButton);
+    </script>
+</body>
+</html>

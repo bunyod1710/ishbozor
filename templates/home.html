@@ -1,0 +1,528 @@
+{% extends 'base.html' %}
+
+{% block title %}Ishbozor - Ish Topish Platforma{% endblock %}
+
+{% block content %}
+<style>
+    .animated-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        animation: gradientShift 15s ease infinite;
+        z-index: 1;
+    }
+
+    @keyframes gradientShift {
+        0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+        50% { background: linear-gradient(135deg, #764ba2 0%, #f093fb 50%, #667eea 100%); }
+        100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
+    }
+
+    .content-wrapper {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .hero-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+        color: white;
+    }
+
+    .hero-section h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-section p {
+        font-size: 18px;
+        opacity: 0.9;
+    }
+
+    .characters-section {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .character-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .character-card:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.05);
+    }
+
+    .character-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .character-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: white;
+    }
+
+    .character-desc {
+        font-size: 13px;
+        opacity: 0.9;
+        color: white;
+        margin: 0;
+    }
+
+    .jobs-section {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .jobs-section h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    .job-card {
+        background: #f5f7fa;
+        border: 0.5px solid #e0e7ff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+
+    .job-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .job-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #0052cc, #003a99);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+    }
+
+    .job-info h3 {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 0.25rem 0;
+        color: #333;
+    }
+
+    .job-info p {
+        font-size: 13px;
+        color: #666;
+        margin: 0.25rem 0;
+    }
+
+    .job-info p.desc {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .job-salary-section p {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
+    }
+
+    .job-salary {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0052cc;
+        margin: 0.25rem 0;
+    }
+
+    .btn-apply {
+        margin-top: 0.5rem;
+        padding: 0.6rem 1rem;
+        background: #0052cc;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-apply:hover {
+        background: #003a99;
+        transform: scale(1.05);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #0052cc;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+    }
+
+    .stats-section {
+        background: rgba(0, 82, 204, 0.9);
+        color: white;
+        padding: 2rem;
+        border-radius: 16px;
+        margin-top: 2rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        text-align: center;
+    }
+
+    .stat-item h3 {
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .stat-item p {
+        font-size: 13px;
+        opacity: 0.9;
+        margin: 0.5rem 0 0 0;
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-box {
+        background: white;
+        border-radius: 16px;
+        max-width: 480px;
+        width: 100%;
+        padding: 2rem;
+        position: relative;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #f0f4f8;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        color: #666;
+    }
+
+    .modal-close:hover {
+        background: #e0e7ff;
+    }
+
+    .modal-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #0052cc;
+        margin-bottom: 1rem;
+        padding-right: 2rem;
+    }
+
+    .modal-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid #f0f4f8;
+        font-size: 0.95rem;
+    }
+
+    .modal-row .label {
+        color: #666;
+    }
+
+    .modal-row .value {
+        color: #333;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .modal-desc {
+        margin: 1rem 0;
+        color: #444;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        background: #f5f7fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .modal-call-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 1.5rem;
+        padding: 0.9rem;
+        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .modal-call-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,82,204,0.3);
+    }
+
+    @media (max-width: 768px) {
+        .characters-section {
+            grid-template-columns: 1fr;
+        }
+
+        .job-card {
+            grid-template-columns: 1fr;
+        }
+
+        .job-salary-section {
+            text-align: left;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="animated-bg"></div>
+
+<div class="content-wrapper">
+    <div class="hero-section">
+        <h1>ISHBOZOR</h1>
+        <p>Ish topish bo'yicha oson va qulay platforma</p>
+    </div>
+
+    <!-- 3 ICON CARDS - TO'G'RI LINKLAR -->
+    <div class="characters-section">
+        <!-- 1. ISH BERISH -->
+        <a href="/ish-berish/">
+            <div class="character-card">
+                <div class="character-icon">📋💼</div>
+                <h3 class="character-title">Ish Berish</h3>
+                <p class="character-desc">Yangi ish e'loni qo'shish va mardikorlarni topish</p>
+            </div>
+        </a>
+
+        <!-- 2. ISH QIDIRISH -->
+        <a href="/jobs/">
+            <div class="character-card">
+                <div class="character-icon">🔍👤</div>
+                <h3 class="character-title">Ish Qidirish</h3>
+                <p class="character-desc">Filtr qilib, sizga mos ishlarni izlash</p>
+            </div>
+        </a>
+
+        <!-- 3. ISHLAR BILAN TANISHISH -->
+        <a href="/ishlarni-korish/">
+            <div class="character-card">
+                <div class="character-icon">🤝</div>
+                <h3 class="character-title">Ishlar Bilan Tanishish</h3>
+                <p class="character-desc">Barcha viloyat'lar bo'ylab mavjud ishlarni ko'rish</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- JOBS SECTION -->
+    <div class="jobs-section">
+        <h2>Eng Yangi Ishlar</h2>
+        <div id="jobs-container">
+            <div class="loading">⏳ Ishlar yuklanmoqda...</div>
+        </div>
+    </div>
+
+    <!-- STATS SECTION -->
+    <div class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3 id="total-jobs">0</h3>
+                <p>Faol Ishlar</p>
+            </div>
+            <div class="stat-item">
+                <h3>24/7</h3>
+                <p>Support</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BATAFSIL MODAL -->
+<div class="modal-overlay" id="job-modal" onclick="if(event.target === this) closeModal()">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title" id="modal-title">-</div>
+
+        <div class="modal-row">
+            <span class="label">📍 Manzil</span>
+            <span class="value" id="modal-location">-</span>
+        </div>
+        <div class="modal-row">
+            <span class="label">🗺️ Hudud</span>
+            <span class="value" id="modal-region">-</span>
+        </div>
+        <div class="modal-row">
+            <span class="label">💰 Maosh</span>
+            <span class="value" id="modal-salary">-</span>
+        </div>
+        <div class="modal-row">
+            <span class="label">👥 Kerakli ishchilar</span>
+            <span class="value" id="modal-workers">-</span>
+        </div>
+
+        <div class="modal-desc" id="modal-desc">-</div>
+
+        <a href="#" class="modal-call-btn" id="modal-call-btn">📞 Qo'ng'iroq Qilish</a>
+    </div>
+</div>
+
+<script>
+    let allJobs = [];
+
+    async function loadJobs() {
+        try {
+            const response = await fetch('/api/jobs/');
+            if (!response.ok) throw new Error('API error');
+
+            const data = await response.json();
+            const jobs = data.results || data;
+            allJobs = jobs;
+            const container = document.getElementById('jobs-container');
+            container.innerHTML = '';
+
+            if (!jobs || jobs.length === 0) {
+                container.innerHTML = '<div class="empty-state">Hozircha ish e\'lonlari mavjud emas</div>';
+                document.getElementById('total-jobs').textContent = '0';
+                return;
+            }
+
+            jobs.slice(0, 10).forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                card.innerHTML = `
+                    <div class="job-icon">💼</div>
+                    <div class="job-info">
+                        <h3>${job.title}</h3>
+                        <p>📍 ${job.region_name} - ${job.district_name}</p>
+                        <p class="desc">${job.description.substring(0, 70)}...</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="job-salary-section">
+                            <p>Maosh</p>
+                            <div class="job-salary">${Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ')} so'm</div>
+                            <button class="btn-apply" onclick="openModal(${job.id})">📄 Batafsil</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('total-jobs').textContent = jobs.length;
+
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('jobs-container').innerHTML = `<div style="background: #ffcccc; color: #cc0000; padding: 1rem; border-radius: 6px; text-align: center;">❌ Xato</div>`;
+        }
+    }
+
+    function openModal(jobId) {
+        const job = allJobs.find(j => j.id === jobId);
+        if (!job) return;
+
+        document.getElementById('modal-title').textContent = job.title;
+        document.getElementById('modal-location').textContent = job.location;
+        document.getElementById('modal-region').textContent = `${job.region_name} - ${job.district_name}`;
+        document.getElementById('modal-salary').textContent = Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ') + " so'm";
+        document.getElementById('modal-workers').textContent = job.required_workers + ' kishi';
+        document.getElementById('modal-desc').textContent = job.description;
+
+        const phone = job.phone_number || '';
+        const callBtn = document.getElementById('modal-call-btn');
+        if (phone) {
+            callBtn.href = `tel:${phone.replace(/\s/g, '')}`;
+            callBtn.textContent = `📞 Qo'ng'iroq Qilish: ${phone}`;
+            callBtn.style.display = 'block';
+        } else {
+            callBtn.style.display = 'none';
+        }
+
+        document.getElementById('job-modal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('job-modal').classList.remove('active');
+    }
+
+    window.addEventListener('load', function() {
+        loadJobs();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,659 @@
+{% extends 'base.html' %}
+
+{% block title %}Ish Qidirish - Ishbozor{% endblock %}
+
+{% block content %}
+<style>
+    .jobs-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .jobs-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .jobs-header h2 {
+        font-size: 2rem;
+        color: #0052cc;
+        margin-bottom: 0.5rem;
+    }
+
+    /* FILTERS - YANGI DIZAYN */
+    .filters-section {
+        background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 35%, #6d28d9 70%, #831843 100%);
+        padding: 2.5rem;
+        border-radius: 24px;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 50px rgba(30, 27, 75, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .filters-section::before {
+        content: '';
+        position: absolute;
+        top: -30%;
+        left: -10%;
+        width: 320px;
+        height: 320px;
+        background: rgba(99, 102, 241, 0.35);
+        border-radius: 50%;
+        filter: blur(50px);
+        pointer-events: none;
+    }
+
+    .filters-section::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        right: -10%;
+        width: 280px;
+        height: 280px;
+        background: rgba(219, 39, 119, 0.3);
+        border-radius: 50%;
+        filter: blur(50px);
+        pointer-events: none;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .filter-group label {
+        display: block;
+        font-weight: 600;
+        color: rgba(255,255,255,0.95);
+        margin-bottom: 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    .filter-group select,
+    .filter-group input[type="text"] {
+        width: 100%;
+        padding: 0.9rem;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        background: rgba(255,255,255,0.12);
+        color: white;
+        backdrop-filter: blur(6px);
+    }
+
+    .filter-group select option {
+        color: #333;
+    }
+
+    .filter-group select:focus,
+    .filter-group input[type="text"]:focus {
+        outline: none;
+        border-color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.2);
+    }
+
+    .job-type-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+
+    .job-type-checkboxes label,
+    .status-radios label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 500;
+        color: rgba(255,255,255,0.95);
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .status-radios {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .filter-btn {
+        padding: 0.9rem 1.8rem;
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.55);
+    }
+
+    .reset-btn {
+        padding: 0.9rem 1.8rem;
+        background: rgba(255,255,255,0.08);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .reset-btn:hover {
+        background: rgba(255,255,255,0.18);
+    }
+
+    /* JOBS LIST */
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .job-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: 80px 1fr 150px;
+        gap: 1.5rem;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+    }
+
+    .job-card:hover {
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        transform: translateY(-4px);
+    }
+
+    .job-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
+
+    .job-info h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+
+    .job-info p {
+        margin: 0.3rem 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .job-location {
+        color: #0052cc;
+        font-weight: 500;
+    }
+
+    .job-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+
+    .tag {
+        background: #f0f4f8;
+        color: #0052cc;
+        padding: 0.25rem 0.6rem;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .job-salary {
+        text-align: right;
+    }
+
+    .salary-amount {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #0052cc;
+        display: block;
+    }
+
+    .salary-label {
+        font-size: 0.75rem;
+        color: #666;
+        display: block;
+    }
+
+    .btn-apply {
+        background: #0052cc;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.2rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .btn-apply:hover {
+        background: #003a99;
+        transform: scale(1.05);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        color: #666;
+    }
+
+    .empty-state h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        color: #0052cc;
+        font-weight: 600;
+    }
+
+    .error {
+        background: #ffcccc;
+        color: #cc0000;
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-box {
+        background: white;
+        border-radius: 16px;
+        max-width: 480px;
+        width: 100%;
+        padding: 2rem;
+        position: relative;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #f0f4f8;
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        color: #666;
+    }
+
+    .modal-close:hover {
+        background: #e0e7ff;
+    }
+
+    .modal-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #0052cc;
+        margin-bottom: 1rem;
+        padding-right: 2rem;
+    }
+
+    .modal-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid #f0f4f8;
+        font-size: 0.95rem;
+    }
+
+    .modal-row .label {
+        color: #666;
+    }
+
+    .modal-row .value {
+        color: #333;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .modal-desc {
+        margin: 1rem 0;
+        color: #444;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        background: #f5f7fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .modal-call-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 1.5rem;
+        padding: 0.9rem;
+        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .modal-call-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,82,204,0.3);
+    }
+
+    @media (max-width: 768px) {
+        .filters-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filters-section {
+            padding: 1.5rem;
+        }
+
+        .job-card {
+            grid-template-columns: 1fr;
+        }
+
+        .job-salary {
+            text-align: left;
+        }
+
+        .filter-buttons {
+            flex-direction: column;
+        }
+
+        .filter-btn,
+        .reset-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="jobs-container">
+    <div class="jobs-header">
+        <h2>🔍 Ish Qidirish</h2>
+        <p>Sizga mos ishlarni filtr qilib izlang</p>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-section">
+        <form id="filter-form">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label for="region-filter">Viloyat</label>
+                    <select id="region-filter" name="region">
+                        <option value="">Barchasi</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="district-filter">Tuman</label>
+                    <select id="district-filter" name="district">
+                        <option value="">Barchasi</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Ish Turi</label>
+                    <div class="job-type-checkboxes">
+                        <label><input type="checkbox" name="job_type" value="construction"> 🏗️ Qurilish</label>
+                        <label><input type="checkbox" name="job_type" value="cleaning"> 🧹 Tozalash</label>
+                        <label><input type="checkbox" name="job_type" value="repair"> 🔧 Ta'mirish</label>
+                        <label><input type="checkbox" name="job_type" value="delivery"> 📦 Tashimoq</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Status</label>
+                    <div class="status-radios">
+                        <label><input type="radio" name="status" value="open"> ✅ Ochiq</label>
+                        <label><input type="radio" name="status" value="closed"> ❌ Yopiq</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <button type="submit" class="filter-btn">🔎 Filtirni Qo'llash</button>
+                <button type="reset" class="reset-btn">↺ Tozalash</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- JOBS LIST -->
+    <div class="jobs-grid" id="jobs-container">
+        <div class="loading">⏳ Ishlar yuklanmoqda...</div>
+    </div>
+</div>
+
+<!-- BATAFSIL MODAL -->
+<div class="modal-overlay" id="job-modal" onclick="if(event.target === this) closeModal()">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title" id="modal-title">-</div>
+
+        <div class="modal-row">
+            <span class="label">📍 Manzil</span>
+            <span class="value" id="modal-location">-</span>
+        </div>
+        <div class="modal-row">
+            <span class="label">🗺️ Hudud</span>
+            <span class="value" id="modal-region">-</span>
+        </div>
+        <div class="modal-row">
+            <span class="label">💰 Maosh</span>
+            <span class="value" id="modal-salary">-</span>
+        </div>
+        <div class="modal-row">
+            <span class="label">👥 Kerakli ishchilar</span>
+            <span class="value" id="modal-workers">-</span>
+        </div>
+
+        <div class="modal-desc" id="modal-desc">-</div>
+
+        <a href="#" class="modal-call-btn" id="modal-call-btn">📞 Qo'ng'iroq Qilish</a>
+    </div>
+</div>
+
+<script>
+    let allJobs = [];
+    let regions = [];
+
+    async function loadRegions() {
+        try {
+            const response = await fetch('/api/regions/');
+            if (!response.ok) throw new Error('API error');
+            const data = await response.json();
+            regions = data.results || data;
+
+            const regionSelect = document.getElementById('region-filter');
+            regions.forEach(region => {
+                const option = document.createElement('option');
+                option.value = region.id;
+                option.textContent = region.name;
+                regionSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    document.getElementById('region-filter').addEventListener('change', async function(e) {
+        const regionId = e.target.value;
+        const districtSelect = document.getElementById('district-filter');
+        districtSelect.innerHTML = '<option value="">Barchasi</option>';
+
+        if (regionId) {
+            try {
+                const response = await fetch(`/api/districts/by_region/?region_id=${regionId}`);
+                if (!response.ok) throw new Error('API error');
+                const data = await response.json();
+                const districts = data.results || data;
+
+                districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.id;
+                    option.textContent = district.name;
+                    districtSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    });
+
+    async function loadJobs() {
+        try {
+            const response = await fetch('/api/jobs/');
+            if (!response.ok) throw new Error('API error');
+
+            const data = await response.json();
+            allJobs = data.results || data;
+            displayJobs(allJobs);
+        } catch (error) {
+            document.getElementById('jobs-container').innerHTML = `<div class="error">❌ Xato: ${error.message}</div>`;
+        }
+    }
+
+    function displayJobs(jobs) {
+        const container = document.getElementById('jobs-container');
+        container.innerHTML = '';
+
+        if (!jobs || jobs.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>Ishlar topilmadi</h3><p>Boshqa filtrlarni sinab ko\'rib chiqing</p></div>';
+            return;
+        }
+
+        jobs.forEach(job => {
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.innerHTML = `
+                <div class="job-icon">💼</div>
+                <div class="job-info">
+                    <h3>${job.title}</h3>
+                    <p class="job-location">📍 ${job.region_name} - ${job.district_name}</p>
+                    <p>${job.description.substring(0, 80)}...</p>
+                    <div class="job-tags">
+                        <span class="tag">${job.job_type}</span>
+                        <span class="tag">${job.status}</span>
+                    </div>
+                </div>
+                <div class="job-salary">
+                    <span class="salary-label">Maosh</span>
+                    <span class="salary-amount">${Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ')} so'm</span>
+                    <button class="btn-apply" onclick="openModal(${job.id})">📄 Batafsil</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function openModal(jobId) {
+        const job = allJobs.find(j => j.id === jobId);
+        if (!job) return;
+
+        document.getElementById('modal-title').textContent = job.title;
+        document.getElementById('modal-location').textContent = job.location;
+        document.getElementById('modal-region').textContent = `${job.region_name} - ${job.district_name}`;
+        document.getElementById('modal-salary').textContent = Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ') + " so'm";
+        document.getElementById('modal-workers').textContent = job.required_workers + ' kishi';
+        document.getElementById('modal-desc').textContent = job.description;
+
+        const phone = job.phone_number || '';
+        const callBtn = document.getElementById('modal-call-btn');
+        if (phone) {
+            callBtn.href = `tel:${phone.replace(/\s/g, '')}`;
+            callBtn.textContent = `📞 Qo'ng'iroq Qilish: ${phone}`;
+            callBtn.style.display = 'block';
+        } else {
+            callBtn.style.display = 'none';
+        }
+
+        document.getElementById('job-modal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('job-modal').classList.remove('active');
+    }
+
+    document.getElementById('filter-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const regionId = document.getElementById('region-filter').value;
+        const districtId = document.getElementById('district-filter').value;
+        const jobType = Array.from(document.querySelectorAll('input[name="job_type"]:checked')).map(el => el.value);
+        const status = document.querySelector('input[name="status"]:checked')?.value;
+
+        let filtered = allJobs;
+
+        if (regionId) filtered = filtered.filter(job => job.region == regionId);
+        if (districtId) filtered = filtered.filter(job => job.district == districtId);
+        if (jobType.length > 0) filtered = filtered.filter(job => jobType.includes(job.job_type));
+        if (status) filtered = filtered.filter(job => job.status == status);
+
+        displayJobs(filtered);
+    });
+
+    loadRegions();
+    loadJobs();
+</script>
+
+{% endblock %}
