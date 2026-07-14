@@ -4,437 +4,219 @@
 
 {% block content %}
 <style>
-    .jobs-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
+    .jobs-container { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem; }
 
-    .jobs-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
+    .jobs-header { text-align: center; margin-bottom: 2rem; }
     .jobs-header h2 {
-        font-size: 2rem;
-        color: #0052cc;
-        margin-bottom: 0.5rem;
+        font-size: 1.9rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.5rem;
+        background: linear-gradient(180deg, #ffffff, rgba(255,255,255,0.7));
+        -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
     }
+    .jobs-header p { color: var(--text-dim); font-size: 0.95rem; }
 
-    /* FILTERS - YANGI DIZAYN */
     .filters-section {
-        background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 35%, #6d28d9 70%, #831843 100%);
-        padding: 2.5rem;
-        border-radius: 24px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        padding: 2rem;
+        border-radius: 18px;
         margin-bottom: 2rem;
-        box-shadow: 0 20px 50px rgba(30, 27, 75, 0.4);
         position: relative;
         overflow: hidden;
     }
-
     .filters-section::before {
-        content: '';
-        position: absolute;
-        top: -30%;
-        left: -10%;
-        width: 320px;
-        height: 320px;
-        background: rgba(99, 102, 241, 0.35);
-        border-radius: 50%;
-        filter: blur(50px);
-        pointer-events: none;
-    }
-
-    .filters-section::after {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        right: -10%;
-        width: 280px;
-        height: 280px;
-        background: rgba(219, 39, 119, 0.3);
-        border-radius: 50%;
-        filter: blur(50px);
-        pointer-events: none;
+        content:'';
+        position:absolute; top:-40%; right:-10%;
+        width:280px; height:280px;
+        background: radial-gradient(circle, rgba(124,108,246,0.18), transparent 70%);
+        pointer-events:none;
     }
 
     .filters-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 1.6rem;
         margin-bottom: 1.5rem;
-        position: relative;
-        z-index: 1;
+        position: relative; z-index: 1;
     }
 
-    .filter-group label {
-        display: block;
-        font-weight: 600;
-        color: rgba(255,255,255,0.95);
-        margin-bottom: 0.6rem;
-        font-size: 0.95rem;
-    }
+    .filter-group label { display: block; font-weight: 600; color: var(--text); margin-bottom: 0.55rem; font-size: 0.88rem; }
 
     .filter-group select,
     .filter-group input[type="text"] {
         width: 100%;
-        padding: 0.9rem;
-        border: 1px solid rgba(255,255,255,0.25);
-        border-radius: 10px;
-        font-size: 0.9rem;
-        background: rgba(255,255,255,0.12);
-        color: white;
-        backdrop-filter: blur(6px);
+        padding: 0.8rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.88rem;
+        background: var(--surface);
+        color: var(--text);
     }
-
-    .filter-group select option {
-        color: #333;
-    }
-
+    .filter-group select option { color: #111; }
     .filter-group select:focus,
     .filter-group input[type="text"]:focus {
         outline: none;
-        border-color: rgba(255,255,255,0.6);
-        background: rgba(255,255,255,0.2);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(124,108,246,0.15);
     }
 
-    .job-type-checkboxes {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
-    }
-
+    .job-type-checkboxes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
     .job-type-checkboxes label,
     .status-radios label {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-weight: 500;
-        color: rgba(255,255,255,0.95);
-        cursor: pointer;
-        font-size: 0.9rem;
+        display: flex; align-items: center; gap: 0.4rem;
+        font-weight: 500; color: var(--text-dim); cursor: pointer; font-size: 0.85rem;
     }
+    .status-radios { display: flex; gap: 1.3rem; flex-wrap: wrap; }
 
-    .status-radios {
-        display: flex;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-
-    .filter-buttons {
-        display: flex;
-        gap: 1rem;
-        position: relative;
-        z-index: 1;
-    }
+    .filter-buttons { display: flex; gap: 1rem; position: relative; z-index: 1; }
 
     .filter-btn {
-        padding: 0.9rem 1.8rem;
-        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        padding: 0.85rem 1.6rem;
+        background: linear-gradient(135deg, var(--accent), #5b4fd6);
+        color: white; border: none; border-radius: 10px;
+        font-weight: 700; cursor: pointer;
+        box-shadow: 0 8px 24px rgba(124,108,246,0.3);
+        transition: transform 0.2s;
     }
-
-    .filter-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.55);
-    }
+    .filter-btn:hover { transform: translateY(-2px); }
 
     .reset-btn {
-        padding: 0.9rem 1.8rem;
-        background: rgba(255,255,255,0.08);
-        color: white;
-        border: 1px solid rgba(255,255,255,0.25);
+        padding: 0.85rem 1.6rem;
+        background: rgba(255,255,255,0.04);
+        color: var(--text);
+        border: 1px solid var(--border);
         border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
+        font-weight: 600; cursor: pointer;
+        transition: background 0.2s;
     }
+    .reset-btn:hover { background: rgba(255,255,255,0.08); }
 
-    .reset-btn:hover {
-        background: rgba(255,255,255,0.18);
-    }
-
-    /* JOBS LIST */
-    .jobs-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
+    .jobs-grid { display: grid; grid-template-columns: 1fr; gap: 0.9rem; }
 
     .job-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem 1.6rem;
         display: grid;
-        grid-template-columns: 80px 1fr 150px;
-        gap: 1.5rem;
+        grid-template-columns: 52px 1fr auto;
+        gap: 1.2rem;
         align-items: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        transition: all 0.3s;
+        transition: border-color 0.25s, transform 0.25s;
     }
-
-    .job-card:hover {
-        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
-        transform: translateY(-4px);
-    }
+    .job-card:hover { border-color: rgba(124,108,246,0.4); transform: translateY(-2px); }
 
     .job-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
+        width: 52px; height: 52px;
+        background: linear-gradient(135deg, var(--accent), #5b4fd6);
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.35rem;
     }
 
-    .job-info h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 1.2rem;
-        color: #333;
-    }
+    .job-info { min-width: 0; }
+    .job-title-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; flex-wrap: wrap; }
+    .job-info h3 { font-size: 1.02rem; font-weight: 700; }
 
-    .job-info p {
-        margin: 0.3rem 0;
-        color: #666;
-        font-size: 0.9rem;
+    .status-badge {
+        font-size: 0.65rem; font-weight: 700;
+        padding: 0.22rem 0.6rem; border-radius: 999px;
+        text-transform: uppercase; letter-spacing: 0.4px;
+        border: 1px solid;
     }
+    .status-open { background: rgba(74,222,128,0.1); color: var(--success); border-color: rgba(74,222,128,0.3); }
+    .status-closed { background: rgba(248,113,113,0.1); color: var(--danger); border-color: rgba(248,113,113,0.3); }
 
-    .job-location {
-        color: #0052cc;
-        font-weight: 500;
-    }
+    .job-info p { font-size: 0.85rem; color: var(--text-dim); margin: 0.18rem 0; }
+    .job-loc { color: var(--accent-2) !important; font-weight: 600; }
 
-    .job-tags {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-top: 0.5rem;
-    }
-
+    .job-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
     .tag {
-        background: #f0f4f8;
-        color: #0052cc;
-        padding: 0.25rem 0.6rem;
-        border-radius: 16px;
-        font-size: 0.75rem;
-        font-weight: 500;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        padding: 0.22rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 600;
     }
 
-    .job-salary {
-        text-align: right;
-    }
-
-    .salary-amount {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #0052cc;
-        display: block;
-    }
-
-    .salary-label {
-        font-size: 0.75rem;
-        color: #666;
-        display: block;
-    }
+    .job-side { text-align: right; }
+    .job-side .label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+    .job-salary { font-size: 1.1rem; font-weight: 800; margin: 0.15rem 0 0.7rem 0; }
 
     .btn-apply {
-        background: #0052cc;
-        color: white;
-        border: none;
-        padding: 0.7rem 1.2rem;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        width: 100%;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 9px;
+        font-size: 0.83rem; font-weight: 700; cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s, border-color 0.2s;
     }
+    .btn-apply:hover { background: linear-gradient(135deg, var(--accent), #5b4fd6); border-color: transparent; }
 
-    .btn-apply:hover {
-        background: #003a99;
-        transform: scale(1.05);
+    .empty-state, .loading {
+        text-align: center; padding: 2.5rem;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        color: var(--text-dim);
     }
-
-    .empty-state {
-        text-align: center;
-        padding: 3rem;
-        background: white;
-        border-radius: 12px;
-        color: #666;
-    }
-
-    .empty-state h3 {
-        font-size: 1.3rem;
-        margin-bottom: 0.5rem;
-        color: #333;
-    }
-
-    .loading {
-        text-align: center;
-        padding: 2rem;
-        background: white;
-        border-radius: 12px;
-        color: #0052cc;
-        font-weight: 600;
-    }
-
-    .error {
-        background: #ffcccc;
-        color: #cc0000;
-        padding: 1rem;
-        border-radius: 6px;
-        text-align: center;
-    }
+    .empty-state h3 { color: var(--text); margin-bottom: 0.5rem; }
+    .error { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.3); padding: 1rem; border-radius: 10px; text-align: center; }
 
     /* MODAL */
     .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.55);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+        z-index: 1000; align-items: center; justify-content: center; padding: 1rem;
     }
-
-    .modal-overlay.active {
-        display: flex;
-    }
-
+    .modal-overlay.active { display: flex; }
     .modal-box {
-        background: white;
-        border-radius: 16px;
-        max-width: 480px;
-        width: 100%;
-        padding: 2rem;
-        position: relative;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        background: var(--surface-2); border: 1px solid var(--border);
+        border-radius: 18px; max-width: 480px; width: 100%; padding: 2rem;
+        position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
     }
-
     .modal-close {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: #f0f4f8;
-        border: none;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 16px;
-        color: #666;
+        position: absolute; top: 1rem; right: 1rem;
+        background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+        width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+        font-size: 15px; color: var(--text-dim);
     }
-
-    .modal-close:hover {
-        background: #e0e7ff;
-    }
-
-    .modal-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #0052cc;
-        margin-bottom: 1rem;
-        padding-right: 2rem;
-    }
-
-    .modal-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.7rem 0;
-        border-bottom: 1px solid #f0f4f8;
-        font-size: 0.95rem;
-    }
-
-    .modal-row .label {
-        color: #666;
-    }
-
-    .modal-row .value {
-        color: #333;
-        font-weight: 600;
-        text-align: right;
-    }
-
+    .modal-close:hover { color: var(--text); }
+    .modal-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 1.2rem; padding-right: 2rem; }
+    .modal-row { display: flex; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .modal-row .label { color: var(--text-dim); }
+    .modal-row .value { font-weight: 600; text-align: right; }
     .modal-desc {
-        margin: 1rem 0;
-        color: #444;
-        font-size: 0.9rem;
-        line-height: 1.6;
-        background: #f5f7fa;
-        padding: 1rem;
-        border-radius: 8px;
+        margin: 1.1rem 0; color: var(--text-dim); font-size: 0.88rem; line-height: 1.6;
+        background: var(--surface); border: 1px solid var(--border); padding: 1rem; border-radius: 10px;
     }
-
     .modal-call-btn {
-        display: block;
-        width: 100%;
-        text-align: center;
-        margin-top: 1.5rem;
-        padding: 0.9rem;
-        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.3s;
+        display: block; width: 100%; text-align: center; margin-top: 1.3rem; padding: 0.9rem;
+        background: linear-gradient(135deg, var(--accent), #5b4fd6); color: white; border: none;
+        border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; text-decoration: none;
+        box-shadow: 0 8px 24px rgba(124,108,246,0.35); transition: transform 0.2s;
     }
-
-    .modal-call-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0,82,204,0.3);
-    }
+    .modal-call-btn:hover { transform: translateY(-2px); }
 
     @media (max-width: 768px) {
-        .filters-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .filters-section {
-            padding: 1.5rem;
-        }
-
-        .job-card {
-            grid-template-columns: 1fr;
-        }
-
-        .job-salary {
-            text-align: left;
-        }
-
-        .filter-buttons {
-            flex-direction: column;
-        }
-
-        .filter-btn,
-        .reset-btn {
-            width: 100%;
-        }
+        .filters-grid { grid-template-columns: 1fr; }
+        .filters-section { padding: 1.5rem; }
+        .job-card { grid-template-columns: 44px 1fr; }
+        .job-side { grid-column: 1 / -1; text-align: left; display: flex; align-items: center; justify-content: space-between; margin-top: 0.7rem; }
+        .filter-buttons { flex-direction: column; }
+        .filter-btn, .reset-btn { width: 100%; }
     }
 </style>
 
 <div class="jobs-container">
     <div class="jobs-header">
-        <h2>🔍 Ish Qidirish</h2>
+        <h2>Ish Qidirish</h2>
         <p>Sizga mos ishlarni filtr qilib izlang</p>
     </div>
 
-    <!-- FILTERS -->
     <div class="filters-section">
         <form id="filter-form">
             <div class="filters-grid">
@@ -472,13 +254,12 @@
             </div>
 
             <div class="filter-buttons">
-                <button type="submit" class="filter-btn">🔎 Filtirni Qo'llash</button>
-                <button type="reset" class="reset-btn">↺ Tozalash</button>
+                <button type="submit" class="filter-btn">Filtirni Qo'llash</button>
+                <button type="reset" class="reset-btn">Tozalash</button>
             </div>
         </form>
     </div>
 
-    <!-- JOBS LIST -->
     <div class="jobs-grid" id="jobs-container">
         <div class="loading">⏳ Ishlar yuklanmoqda...</div>
     </div>
@@ -490,22 +271,10 @@
         <button class="modal-close" onclick="closeModal()">✕</button>
         <div class="modal-title" id="modal-title">-</div>
 
-        <div class="modal-row">
-            <span class="label">📍 Manzil</span>
-            <span class="value" id="modal-location">-</span>
-        </div>
-        <div class="modal-row">
-            <span class="label">🗺️ Hudud</span>
-            <span class="value" id="modal-region">-</span>
-        </div>
-        <div class="modal-row">
-            <span class="label">💰 Maosh</span>
-            <span class="value" id="modal-salary">-</span>
-        </div>
-        <div class="modal-row">
-            <span class="label">👥 Kerakli ishchilar</span>
-            <span class="value" id="modal-workers">-</span>
-        </div>
+        <div class="modal-row"><span class="label">📍 Manzil</span><span class="value" id="modal-location">-</span></div>
+        <div class="modal-row"><span class="label">🗺️ Hudud</span><span class="value" id="modal-region">-</span></div>
+        <div class="modal-row"><span class="label">💰 Maosh</span><span class="value" id="modal-salary">-</span></div>
+        <div class="modal-row"><span class="label">👥 Kerakli ishchilar</span><span class="value" id="modal-workers">-</span></div>
 
         <div class="modal-desc" id="modal-desc">-</div>
 
@@ -582,24 +351,29 @@
             return;
         }
 
+        const typeLabels = { construction: '🏗️ Qurilish', cleaning: '🧹 Tozalash', repair: '🔧 Ta\'mirish', delivery: '📦 Tashimoq', other: '📌 Boshqa' };
+
         jobs.forEach(job => {
             const card = document.createElement('div');
             card.className = 'job-card';
+            const statusOpen = job.status === 'open';
             card.innerHTML = `
                 <div class="job-icon">💼</div>
                 <div class="job-info">
-                    <h3>${job.title}</h3>
-                    <p class="job-location">📍 ${job.region_name} - ${job.district_name}</p>
+                    <div class="job-title-row">
+                        <h3>${job.title}</h3>
+                        <span class="status-badge ${statusOpen ? 'status-open' : 'status-closed'}">${statusOpen ? 'Ochiq' : 'Yopiq'}</span>
+                    </div>
+                    <p class="job-loc">📍 ${job.region_name} - ${job.district_name}</p>
                     <p>${job.description.substring(0, 80)}...</p>
                     <div class="job-tags">
-                        <span class="tag">${job.job_type}</span>
-                        <span class="tag">${job.status}</span>
+                        <span class="tag">${typeLabels[job.job_type] || job.job_type}</span>
                     </div>
                 </div>
-                <div class="job-salary">
-                    <span class="salary-label">Maosh</span>
-                    <span class="salary-amount">${Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ')} so'm</span>
-                    <button class="btn-apply" onclick="openModal(${job.id})">📄 Batafsil</button>
+                <div class="job-side">
+                    <div class="label">Maosh</div>
+                    <div class="job-salary">${Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ')} so'm</div>
+                    <button class="btn-apply" onclick="openModal(${job.id})">Batafsil</button>
                 </div>
             `;
             container.appendChild(card);

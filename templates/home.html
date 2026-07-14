@@ -4,412 +4,333 @@
 
 {% block content %}
 <style>
-    .animated-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-        animation: gradientShift 15s ease infinite;
-        z-index: 1;
-    }
-
-    @keyframes gradientShift {
-        0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
-        50% { background: linear-gradient(135deg, #764ba2 0%, #f093fb 50%, #667eea 100%); }
-        100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); }
-    }
-
-    .content-wrapper {
-        position: relative;
-        z-index: 2;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
     .hero-section {
+        position: relative;
+        padding: 6rem 2rem 8rem 2rem;
         text-align: center;
-        margin-bottom: 3rem;
-        padding: 2rem;
-        color: white;
+        overflow: hidden;
+        background:
+            radial-gradient(ellipse 700px 400px at 20% 0%, rgba(124,108,246,0.35), transparent 60%),
+            radial-gradient(ellipse 600px 400px at 85% 20%, rgba(69,196,255,0.25), transparent 60%),
+            radial-gradient(ellipse 500px 400px at 50% 100%, rgba(255,107,179,0.15), transparent 60%),
+            var(--bg);
     }
-
+    .hero-section::before {
+        content:'';
+        position:absolute; inset:0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse 800px 500px at 50% 20%, black, transparent);
+    }
+    .hero-eyebrow {
+        display:inline-flex; align-items:center; gap:0.5rem;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        color: var(--accent-2);
+        font-size: 0.78rem; font-weight: 600;
+        padding: 0.4rem 1rem;
+        border-radius: 999px;
+        margin-bottom: 1.8rem;
+        position: relative;
+    }
+    .hero-eyebrow::before { content:'●'; color: var(--success); font-size:0.6rem; }
     .hero-section h1 {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+        font-size: clamp(2.2rem, 6vw, 3.6rem);
+        font-weight: 800;
+        letter-spacing: -2px;
+        line-height: 1.1;
+        margin-bottom: 1.3rem;
+        position: relative;
+        background: linear-gradient(180deg, #ffffff 20%, rgba(255,255,255,0.65));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
-
+    .hero-section h1 span {
+        background: linear-gradient(135deg, var(--accent-2), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
     .hero-section p {
-        font-size: 18px;
-        opacity: 0.9;
+        font-size: 1.05rem;
+        color: var(--text-dim);
+        max-width: 480px;
+        margin: 0 auto 2.2rem auto;
+        position: relative;
     }
+    .hero-actions { display:flex; gap:0.9rem; justify-content:center; position:relative; flex-wrap: wrap; }
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent), #5b4fd6);
+        color: white; border:none; text-decoration:none;
+        padding: 0.85rem 1.7rem;
+        border-radius: 10px;
+        font-weight: 700; font-size: 0.95rem;
+        box-shadow: 0 8px 24px rgba(124,108,246,0.35);
+        cursor: pointer;
+        display:inline-block;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(124,108,246,0.5); }
+    .btn-ghost {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        color: var(--text); text-decoration:none;
+        padding: 0.85rem 1.7rem;
+        border-radius: 10px;
+        font-weight: 600; font-size: 0.95rem;
+        cursor: pointer;
+        display:inline-block;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+
+    .content-wrapper { max-width:1100px; margin: 0 auto; padding: 0 1.5rem; }
 
     .characters-section {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-        margin-bottom: 3rem;
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:1.3rem;
+        margin-top: -5rem;
+        position: relative;
+        z-index: 2;
     }
-
     .character-card {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        padding: 2rem;
-        text-align: center;
-        color: white;
-        cursor: pointer;
-        transition: all 0.3s;
+        background: linear-gradient(180deg, var(--surface-2), var(--surface));
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1.8rem 1.6rem;
+        text-align: left;
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        display: block;
+        color: var(--text);
+        transition: transform 0.3s cubic-bezier(.2,.8,.2,1), border-color 0.3s;
     }
+    .character-card:hover { transform: translateY(-6px); border-color: rgba(124,108,246,0.5); }
+    .character-icon-badge {
+        width: 44px; height: 44px;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display:flex; align-items:center; justify-content:center;
+        font-size: 1.25rem;
+        margin-bottom: 1.1rem;
+    }
+    .character-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.45rem; letter-spacing:-0.2px; }
+    .character-desc { font-size: 0.86rem; color: var(--text-dim); line-height: 1.55; }
+    .character-arrow { position:absolute; top:1.6rem; right:1.6rem; color: var(--text-dim); font-size:1.1rem; transition: transform 0.3s, color 0.3s; }
+    .character-card:hover .character-arrow { transform: translate(3px,-3px); color: var(--accent-2); }
 
-    .character-card:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: scale(1.05);
+    .stats-strip {
+        display:flex; justify-content:center; gap: 3rem;
+        margin: 3.5rem 0 3rem 0;
+        flex-wrap: wrap;
     }
+    .stat-item { text-align:center; }
+    .stat-item .num { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-2), var(--accent)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .stat-item .lbl { font-size: 0.8rem; color: var(--text-dim); margin-top: 0.2rem; }
 
-    .character-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-
-    .character-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: white;
-    }
-
-    .character-desc {
-        font-size: 13px;
-        opacity: 0.9;
-        color: white;
-        margin: 0;
-    }
-
-    .jobs-section {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-top: 2rem;
-    }
-
-    .jobs-section h2 {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: #333;
-    }
+    .jobs-section { margin-bottom: 4rem; }
+    .jobs-section-header { display:flex; justify-content:space-between; align-items:baseline; margin-bottom: 1.4rem; }
+    .jobs-section-header h2 { font-size: 1.5rem; font-weight: 800; letter-spacing:-0.5px; }
+    .jobs-section-header span { font-size: 0.85rem; color: var(--text-dim); }
 
     .job-card {
-        background: #f5f7fa;
-        border: 0.5px solid #e0e7ff;
-        border-radius: 12px;
-        padding: 1.5rem;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 1rem;
-        transition: all 0.3s;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.4rem 1.6rem;
+        display:grid;
+        grid-template-columns: 52px 1fr auto;
+        gap: 1.2rem;
+        align-items:center;
+        margin-bottom: 0.9rem;
+        transition: border-color 0.25s, transform 0.25s;
     }
-
-    .job-card:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
-    }
+    .job-card:hover { border-color: rgba(124,108,246,0.4); transform: translateY(-2px); }
 
     .job-icon {
-        width: 48px;
-        height: 48px;
-        background: linear-gradient(135deg, #0052cc, #003a99);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 20px;
+        width:52px; height:52px;
+        background: linear-gradient(135deg, var(--accent), #5b4fd6);
+        border-radius:14px;
+        display:flex; align-items:center; justify-content:center;
+        font-size:1.35rem;
     }
-
-    .job-info h3 {
-        font-size: 15px;
-        font-weight: 600;
-        margin: 0 0 0.25rem 0;
-        color: #333;
+    .job-info { min-width: 0; }
+    .job-title-row { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.35rem; flex-wrap: wrap; }
+    .job-info h3 { font-size: 1.02rem; font-weight:700; }
+    .status-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 0.22rem 0.6rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        border: 1px solid;
     }
+    .status-open { background: rgba(74,222,128,0.1); color: var(--success); border-color: rgba(74,222,128,0.3); }
+    .status-closed { background: rgba(248,113,113,0.1); color: var(--danger); border-color: rgba(248,113,113,0.3); }
+    .job-info p { font-size:0.85rem; color: var(--text-dim); margin:0.18rem 0; }
+    .job-loc { color: var(--accent-2) !important; font-weight:600; }
 
-    .job-info p {
-        font-size: 13px;
-        color: #666;
-        margin: 0.25rem 0;
-    }
-
-    .job-info p.desc {
-        color: #999;
-        font-size: 12px;
-    }
-
-    .job-salary-section p {
-        font-size: 13px;
-        color: #666;
-        margin: 0;
-    }
-
-    .job-salary {
-        font-size: 18px;
-        font-weight: 600;
-        color: #0052cc;
-        margin: 0.25rem 0;
-    }
-
+    .job-side { text-align:right; }
+    .job-side .label { font-size:0.7rem; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.5px; }
+    .job-salary { font-size:1.15rem; font-weight:800; margin: 0.15rem 0 0.7rem 0; }
     .btn-apply {
-        margin-top: 0.5rem;
-        padding: 0.6rem 1rem;
-        background: #0052cc;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
+        padding: 0.6rem 1.2rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius:9px;
+        font-size:0.83rem; font-weight:700; cursor:pointer;
+        white-space: nowrap;
+        transition: background 0.2s, border-color 0.2s;
     }
+    .btn-apply:hover { background: linear-gradient(135deg, var(--accent), #5b4fd6); border-color: transparent; }
 
-    .btn-apply:hover {
-        background: #003a99;
-        transform: scale(1.05);
-    }
-
-    .loading {
+    .loading, .empty-state {
         text-align: center;
-        padding: 2rem;
-        color: #0052cc;
-        font-weight: 600;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 2rem;
-        color: #666;
-    }
-
-    .stats-section {
-        background: rgba(0, 82, 204, 0.9);
-        color: white;
-        padding: 2rem;
+        padding: 2.5rem;
+        color: var(--text-dim);
+        background: var(--surface-2);
         border-radius: 16px;
-        margin-top: 2rem;
-        backdrop-filter: blur(10px);
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-        text-align: center;
-    }
-
-    .stat-item h3 {
-        font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .stat-item p {
-        font-size: 13px;
-        opacity: 0.9;
-        margin: 0.5rem 0 0 0;
-    }
-
-    a {
-        text-decoration: none;
-        color: inherit;
+        border: 1px solid var(--border);
     }
 
     /* MODAL */
     .modal-overlay {
         display: none;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.55);
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(4px);
         z-index: 1000;
         align-items: center;
         justify-content: center;
         padding: 1rem;
     }
-
-    .modal-overlay.active {
-        display: flex;
-    }
-
+    .modal-overlay.active { display: flex; }
     .modal-box {
-        background: white;
-        border-radius: 16px;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 18px;
         max-width: 480px;
         width: 100%;
         padding: 2rem;
         position: relative;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.5);
     }
-
     .modal-close {
         position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: #f0f4f8;
-        border: none;
-        width: 32px;
-        height: 32px;
+        top: 1rem; right: 1rem;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border);
+        width: 32px; height: 32px;
         border-radius: 50%;
         cursor: pointer;
-        font-size: 16px;
-        color: #666;
+        font-size: 15px;
+        color: var(--text-dim);
     }
-
-    .modal-close:hover {
-        background: #e0e7ff;
-    }
-
+    .modal-close:hover { color: var(--text); }
     .modal-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #0052cc;
-        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin-bottom: 1.2rem;
         padding-right: 2rem;
     }
-
     .modal-row {
         display: flex;
         justify-content: space-between;
         padding: 0.7rem 0;
-        border-bottom: 1px solid #f0f4f8;
-        font-size: 0.95rem;
-    }
-
-    .modal-row .label {
-        color: #666;
-    }
-
-    .modal-row .value {
-        color: #333;
-        font-weight: 600;
-        text-align: right;
-    }
-
-    .modal-desc {
-        margin: 1rem 0;
-        color: #444;
+        border-bottom: 1px solid var(--border);
         font-size: 0.9rem;
-        line-height: 1.6;
-        background: #f5f7fa;
-        padding: 1rem;
-        border-radius: 8px;
     }
-
+    .modal-row .label { color: var(--text-dim); }
+    .modal-row .value { font-weight: 600; text-align: right; }
+    .modal-desc {
+        margin: 1.1rem 0;
+        color: var(--text-dim);
+        font-size: 0.88rem;
+        line-height: 1.6;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 1rem;
+        border-radius: 10px;
+    }
     .modal-call-btn {
         display: block;
         width: 100%;
         text-align: center;
-        margin-top: 1.5rem;
+        margin-top: 1.3rem;
         padding: 0.9rem;
-        background: linear-gradient(135deg, #0052cc 0%, #003a99 100%);
+        background: linear-gradient(135deg, var(--accent), #5b4fd6);
         color: white;
         border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-weight: 700;
         cursor: pointer;
         text-decoration: none;
-        transition: all 0.3s;
+        box-shadow: 0 8px 24px rgba(124,108,246,0.35);
+        transition: transform 0.2s;
     }
-
-    .modal-call-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0,82,204,0.3);
-    }
+    .modal-call-btn:hover { transform: translateY(-2px); }
 
     @media (max-width: 768px) {
-        .characters-section {
-            grid-template-columns: 1fr;
-        }
-
-        .job-card {
-            grid-template-columns: 1fr;
-        }
-
-        .job-salary-section {
-            text-align: left;
-        }
-
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
+        .characters-section { grid-template-columns: 1fr; margin-top: -3.5rem; }
+        .job-card { grid-template-columns: 44px 1fr; }
+        .job-side { grid-column: 1 / -1; text-align:left; display:flex; align-items:center; justify-content:space-between; margin-top:0.7rem; }
+        .btn-apply { padding: 0.8rem 1.4rem; font-size: 0.9rem; }
+        .hero-section { padding: 4rem 1.2rem 6rem 1.2rem; }
+        .stats-strip { gap: 1.8rem; }
     }
 </style>
 
-<div class="animated-bg"></div>
+<div class="hero-section">
+    <span class="hero-eyebrow">O'zbekiston bo'ylab faol</span>
+    <h1>Ish topish endi<br><span>bir necha soniya</span></h1>
+    <p>Mardikorlarni va ish beruvchilarni real vaqtda bog'laydigan zamonaviy platforma</p>
+</div>
 
 <div class="content-wrapper">
-    <div class="hero-section">
-        <h1>ISHBOZOR</h1>
-        <p>Ish topish bo'yicha oson va qulay platforma</p>
-    </div>
-
-    <!-- 3 ICON CARDS - TO'G'RI LINKLAR -->
     <div class="characters-section">
-        <!-- 1. ISH BERISH -->
-        <a href="/ish-berish/">
-            <div class="character-card">
-                <div class="character-icon">📋💼</div>
-                <h3 class="character-title">Ish Berish</h3>
-                <p class="character-desc">Yangi ish e'loni qo'shish va mardikorlarni topish</p>
-            </div>
+        <a href="/ish-berish/" class="character-card">
+            <span class="character-arrow">↗</span>
+            <div class="character-icon-badge">📋</div>
+            <h3 class="character-title">Ish Berish</h3>
+            <p class="character-desc">Yangi ish e'loni qo'shing va daqiqalar ichida mardikor toping</p>
         </a>
-
-        <!-- 2. ISH QIDIRISH -->
-        <a href="/jobs/">
-            <div class="character-card">
-                <div class="character-icon">🔍👤</div>
-                <h3 class="character-title">Ish Qidirish</h3>
-                <p class="character-desc">Filtr qilib, sizga mos ishlarni izlash</p>
-            </div>
+        <a href="/jobs/" class="character-card">
+            <span class="character-arrow">↗</span>
+            <div class="character-icon-badge">🔍</div>
+            <h3 class="character-title">Ish Qidirish</h3>
+            <p class="character-desc">Hudud va turi bo'yicha filtrlab, sizga mos ishni toping</p>
         </a>
-
-        <!-- 3. ISHLAR BILAN TANISHISH -->
-        <a href="/ishlarni-korish/">
-            <div class="character-card">
-                <div class="character-icon">🤝</div>
-                <h3 class="character-title">Ishlar Bilan Tanishish</h3>
-                <p class="character-desc">Barcha viloyat'lar bo'ylab mavjud ishlarni ko'rish</p>
-            </div>
+        <a href="/ishlarni-korish/" class="character-card">
+            <span class="character-arrow">↗</span>
+            <div class="character-icon-badge">🤝</div>
+            <h3 class="character-title">Barcha Ishlar</h3>
+            <p class="character-desc">Butun O'zbekiston bo'ylab mavjud e'lonlar bilan tanishing</p>
         </a>
     </div>
 
-    <!-- JOBS SECTION -->
+    <div class="stats-strip">
+        <div class="stat-item"><div class="num" id="total-jobs">0</div><div class="lbl">Faol Ishlar</div></div>
+        <div class="stat-item"><div class="num">12</div><div class="lbl">Viloyat</div></div>
+        <div class="stat-item"><div class="num">24/7</div><div class="lbl">Qo'llab-quvvatlash</div></div>
+    </div>
+
     <div class="jobs-section">
-        <h2>Eng Yangi Ishlar</h2>
+        <div class="jobs-section-header">
+            <h2>Eng Yangi Ishlar</h2>
+        </div>
         <div id="jobs-container">
             <div class="loading">⏳ Ishlar yuklanmoqda...</div>
-        </div>
-    </div>
-
-    <!-- STATS SECTION -->
-    <div class="stats-section">
-        <div class="stats-grid">
-            <div class="stat-item">
-                <h3 id="total-jobs">0</h3>
-                <p>Faol Ishlar</p>
-            </div>
-            <div class="stat-item">
-                <h3>24/7</h3>
-                <p>Support</p>
-            </div>
         </div>
     </div>
 </div>
@@ -420,22 +341,10 @@
         <button class="modal-close" onclick="closeModal()">✕</button>
         <div class="modal-title" id="modal-title">-</div>
 
-        <div class="modal-row">
-            <span class="label">📍 Manzil</span>
-            <span class="value" id="modal-location">-</span>
-        </div>
-        <div class="modal-row">
-            <span class="label">🗺️ Hudud</span>
-            <span class="value" id="modal-region">-</span>
-        </div>
-        <div class="modal-row">
-            <span class="label">💰 Maosh</span>
-            <span class="value" id="modal-salary">-</span>
-        </div>
-        <div class="modal-row">
-            <span class="label">👥 Kerakli ishchilar</span>
-            <span class="value" id="modal-workers">-</span>
-        </div>
+        <div class="modal-row"><span class="label">📍 Manzil</span><span class="value" id="modal-location">-</span></div>
+        <div class="modal-row"><span class="label">🗺️ Hudud</span><span class="value" id="modal-region">-</span></div>
+        <div class="modal-row"><span class="label">💰 Maosh</span><span class="value" id="modal-salary">-</span></div>
+        <div class="modal-row"><span class="label">👥 Kerakli ishchilar</span><span class="value" id="modal-workers">-</span></div>
 
         <div class="modal-desc" id="modal-desc">-</div>
 
@@ -466,19 +375,21 @@
             jobs.slice(0, 10).forEach(job => {
                 const card = document.createElement('div');
                 card.className = 'job-card';
+                const statusOpen = job.status === 'open';
                 card.innerHTML = `
                     <div class="job-icon">💼</div>
                     <div class="job-info">
-                        <h3>${job.title}</h3>
-                        <p>📍 ${job.region_name} - ${job.district_name}</p>
-                        <p class="desc">${job.description.substring(0, 70)}...</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="job-salary-section">
-                            <p>Maosh</p>
-                            <div class="job-salary">${Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ')} so'm</div>
-                            <button class="btn-apply" onclick="openModal(${job.id})">📄 Batafsil</button>
+                        <div class="job-title-row">
+                            <h3>${job.title}</h3>
+                            <span class="status-badge ${statusOpen ? 'status-open' : 'status-closed'}">${statusOpen ? 'Ochiq' : 'Yopiq'}</span>
                         </div>
+                        <p class="job-loc">📍 ${job.region_name} - ${job.district_name}</p>
+                        <p>${job.description.substring(0, 70)}...</p>
+                    </div>
+                    <div class="job-side">
+                        <div class="label">Maosh</div>
+                        <div class="job-salary">${Number(job.salary).toLocaleString('ru-RU').replace(/,/g, ' ')} so'm</div>
+                        <button class="btn-apply" onclick="openModal(${job.id})">Batafsil</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -488,7 +399,7 @@
 
         } catch (error) {
             console.error('Error:', error);
-            document.getElementById('jobs-container').innerHTML = `<div style="background: #ffcccc; color: #cc0000; padding: 1rem; border-radius: 6px; text-align: center;">❌ Xato</div>`;
+            document.getElementById('jobs-container').innerHTML = `<div class="empty-state">❌ Xato yuz berdi</div>`;
         }
     }
 
